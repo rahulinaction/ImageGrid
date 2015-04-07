@@ -6,19 +6,18 @@ import android.view.View;
 import android.widget.AbsListView;
 import android.widget.HeaderViewListAdapter;
 import android.widget.ListView;
-
 import java.util.List;
-
 import imagegrid.rendevezous.org.imagegrid.R;
 import imagegrid.rendevezous.org.imagegrid.fragment.ImageListFragment;
+import imagegrid.rendevezous.org.imagegrid.global.ImageGrid;
 import imagegrid.rendevezous.org.imagegrid.model.ImageElement;
+import imagegrid.rendevezous.org.imagegrid.common.ImageGridConstant;
 
 /**
  * Created by rahul on 21/3/15.
  */
 public class ImageGridListView  extends ListView implements AbsListView.OnScrollListener {
-
-    private boolean isLoading;
+    private boolean endStatus;
     public ImageGridListView(Context context) {
         super(context);
     }
@@ -26,7 +25,7 @@ public class ImageGridListView  extends ListView implements AbsListView.OnScroll
     private ImageElementAdapter adapter;
     private View footer;
     private Context context;
-    public static final int MAX_LIMIT = 20;
+//    public static final int MAX_LIMIT = 20;
     public ImageGridListView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
         this.currentInteger = 0;
@@ -56,11 +55,9 @@ public class ImageGridListView  extends ListView implements AbsListView.OnScroll
 
         int l = visibleItemCount + firstVisibleItem;
 
-        if (l >= totalItemCount && !isLoading) {
-            isLoading = true;
+        if (l >= totalItemCount && !endStatus) {
+            endStatus = true;
             // It is time to add new data. We call the listener
-
-            System.out.println("came inside here with value "+l);
             this.getData();
         }
     }
@@ -76,10 +73,10 @@ public class ImageGridListView  extends ListView implements AbsListView.OnScroll
 
     public void addNewData(List<ImageElement> images) {
        /*stop pagination  if count of items is not equal to maximum indicating we have reached end*/
-        if(images.size()<MAX_LIMIT) {
-            isLoading = true;
+        if(images.size()<ImageGridConstant.MAX_LIMIT) {
+            endStatus = true;
         }else {
-            isLoading = false;
+            endStatus = false;
         }
         ImageElementAdapter imageAdapter =  ((ImageElementAdapter)((HeaderViewListAdapter)this.getAdapter()).getWrappedAdapter());
         imageAdapter.addAllImages(images);
@@ -98,7 +95,6 @@ public class ImageGridListView  extends ListView implements AbsListView.OnScroll
     public void setLoadingView(int resId) {
         LayoutInflater inflater =  (LayoutInflater) this.context
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        //LayoutInflater inflater = (LayoutInflater) super.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         footer = (View) inflater.inflate(resId, null);
         this.addFooterView(footer);
     }

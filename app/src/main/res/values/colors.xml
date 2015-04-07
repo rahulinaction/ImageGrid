@@ -9,4 +9,5 @@
     <color name="list_row_hover_start_color">#ebeef0</color>
     <color name="list_row_hover_end_color">#ebeef0</color>
     <color name="golden_brown">#3b2a20</color>
+    <color name="black">#000000</color>
 </resources>

@@ -1,6 +1,7 @@
 package imagegrid.rendevezous.org.imagegrid.uicomponents;
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,16 +10,24 @@ import android.view.animation.Animation;
 import android.view.animation.TranslateAnimation;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
+
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
 import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import imagegrid.rendevezous.org.imagegrid.DetailActivity;
 import imagegrid.rendevezous.org.imagegrid.R;
 import imagegrid.rendevezous.org.imagegrid.fragment.ImageListFragment;
+import imagegrid.rendevezous.org.imagegrid.global.ImageGrid;
 import imagegrid.rendevezous.org.imagegrid.model.ImageElement;
 
 public class ImageElementAdapter extends BaseAdapter {
@@ -27,12 +36,14 @@ public class ImageElementAdapter extends BaseAdapter {
     private List<ImageElement> imageItems;
     private int lastPosition = -1;
     DisplayImageOptions options;
+    //public Context currentContext;
     public ImageListFragment imageListFragment;
     public ImageElementAdapter(Activity activity, List<ImageElement> imageItems,ImageListFragment imageListFragment) {
         this.activity = activity;
         this.imageItems = imageItems;
         inflater = (LayoutInflater) this.activity.getApplicationContext()
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        //this.currentContext = this.activity.getApplicationContext();
         this.imageListFragment = imageListFragment;
         this.options = new DisplayImageOptions.Builder()
                 .cacheInMemory(true)
@@ -67,7 +78,7 @@ public class ImageElementAdapter extends BaseAdapter {
     }
 
     @Override
-    public View getView(int position, View view, ViewGroup viewGroup) {
+    public View getView(final int position, View view, ViewGroup viewGroup) {
         if(view==null){
             view = this.inflater.inflate(R.layout.simple_image_cell,viewGroup,false);
         }
@@ -79,23 +90,48 @@ public class ImageElementAdapter extends BaseAdapter {
         ImageView currentImageView = (ImageView)view.findViewById(R.id.elementImage);
         currentImageView.getLayoutParams().height = height;
         currentImageView.getLayoutParams().width = width;
+        final ProgressBar progressView = (ProgressBar)view.findViewById(R.id.imageProgress);
         ImageLoader.getInstance().displayImage(currentImageElement.getUrl(),currentImageView, this.options,new SimpleImageLoadingListener() {
             @Override
             public void onLoadingStarted(String imageUri, View view) {
-
+                progressView.setProgress(0);
+                progressView.setVisibility(View.VISIBLE);
             }
 
             @Override
             public void onLoadingFailed(String imageUri, View view,
                                         FailReason failReason) {
+                progressView.setVisibility(View.GONE);
             }
 
-            //				 @Override
+            @Override
             public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
-
+                progressView.setVisibility(View.GONE);
             }
 
         });
+
+        final Activity a = this.activity;
+        final ImageGrid applicationContext = (ImageGrid) a.getApplicationContext();
+        final List<ImageElement> _imageItems = this.imageItems;
+        currentImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                try {
+                    Intent intent = new Intent(a, DetailActivity.class);
+                    JSONObject contentObject = new JSONObject();
+                    contentObject.putOpt("imageItems",_imageItems);
+                    contentObject.put("position",position);
+                    applicationContext.setImageElements(contentObject);
+                    a.startActivity(intent);
+                    a.overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
 
         if(view != null) {
             Animation animation = new TranslateAnimation(0, 0, (position > lastPosition) ? 100 : -100, 0);
@@ -103,7 +139,6 @@ public class ImageElementAdapter extends BaseAdapter {
             view.startAnimation(animation);
         }
         lastPosition = position;
-
         return view;
     }
 
@@ -122,11 +157,6 @@ public class ImageElementAdapter extends BaseAdapter {
 
     public void addAllImages(List<ImageElement> imageElements){
         imageItems.addAll(imageElements);
-        //System.out.println("add images called");
-//        for(int i=0;i<imageElements.size();i++) {
-//            imageItems.add(imageElements.get(i));
-//        }
-        System.out.println("the end image items size is "+imageItems.size());
     }
 
 }

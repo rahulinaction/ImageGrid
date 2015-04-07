@@ -1,6 +1,8 @@
 package imagegrid.rendevezous.org.imagegrid.model;
 
-public class ImageElement{
+import android.os.Parcelable;
+
+public class ImageElement  {
 
     public Integer id;
     public String url;
@@ -46,4 +48,6 @@ public class ImageElement{
     public void setWidth(Integer _width) {
         this.width = _width;
     }
+
+    //private ImageElement(Parce)
 }

@@ -1,47 +1,47 @@
 package imagegrid.rendevezous.org.imagegrid.fragment;
-
 import android.app.Fragment;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ListView;
-import com.loopj.android.http.AsyncHttpClient;
-import com.loopj.android.http.AsyncHttpResponseHandler;
+import imagegrid.rendevezous.org.imagegrid.R;
+import imagegrid.rendevezous.org.imagegrid.common.ImageGridConstant;
 import imagegrid.rendevezous.org.imagegrid.global.ImageGrid;
 import imagegrid.rendevezous.org.imagegrid.model.ImageElement;
+import imagegrid.rendevezous.org.imagegrid.uicomponents.ImageGalleryAdapter;
+import android.support.v4.view.ViewPager;
+
+import com.loopj.android.http.AsyncHttpClient;
+import com.loopj.android.http.AsyncHttpResponseHandler;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
+
 import java.util.ArrayList;
-import java.util.List;
-import imagegrid.rendevezous.org.imagegrid.R;
-import imagegrid.rendevezous.org.imagegrid.uicomponents.ImageElementAdapter;
-import imagegrid.rendevezous.org.imagegrid.uicomponents.ImageGridListView;
-import imagegrid.rendevezous.org.imagegrid.common.ImageGridConstant;
-public class  ImageListFragment extends Fragment {
-    ImageGridListView imageList;
-    ImageListFragment currentFragment;
-    ImageElementAdapter imageAdapter;
+
+/**
+ * Created by rahul on 27/3/15.
+ */
+public class ImageDetailFragment extends Fragment {
+    public ViewPager imageGallery;
+    ImageGalleryAdapter imageGalleryAdapter;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-
-        View rootView = inflater.inflate(R.layout.imagelistfragment, container, false);
+        View rootView = inflater.inflate(R.layout.imagedetailfragment, container, false);
         return rootView;
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        currentFragment =  this;
     }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        this.fetchData(0);
-        /*O for initial page items*/
+        this.renderDetailView();
     }
 
     public void fetchData(final Integer current) {
@@ -65,33 +65,51 @@ public class  ImageListFragment extends Fragment {
                         currentEvent.setWidth(Integer.parseInt(currentObject.getString("width")));
                         events.add(currentEvent);
                     }
-
-                    if(events.size()==ImageGridConstant.MAX_LIMIT){
+                    if(events.size()== ImageGridConstant.MAX_LIMIT){
                         imageGrid.setEndStatus(false);
                     }else{
                         imageGrid.setEndStatus(true);
                     }
-
                     imageGrid.setPaginationIndex(current);
-
-                    /*True for first time rendering*/
-                    if(current.intValue()==0) {
-                        currentFragment.render(events);
-                    }else{
-                        imageList.addNewData(events);
-                    }
-
+                    imageGalleryAdapter.addAllImages(events);
+                    imageGalleryAdapter.notifyDataSetChanged();
                 } catch (Throwable t) {
-                    Log.e("ImageGrid Error",Log.getStackTraceString(t));
+                    Log.e("ImageGrid Error", Log.getStackTraceString(t));
                 }
 
             }
         });
     }
 
-    public void render ( List<ImageElement> imageItems){
-        imageList = (ImageGridListView) getView().findViewById(R.id.imageList);
-        imageAdapter = new ImageElementAdapter(getActivity(),imageItems,this);
-        imageList.setAdapter(imageAdapter);
+
+    public void renderDetailView() {
+        imageGallery = (ViewPager) getView().findViewById(R.id.imageGallery);
+        final ImageGrid imageGrid = (ImageGrid) getActivity().getApplicationContext();
+        imageGalleryAdapter = new ImageGalleryAdapter(getActivity().getApplicationContext(),imageGrid.getImageElements());
+        imageGallery.setAdapter(imageGalleryAdapter);
+        imageGallery.setCurrentItem(imageGrid.getElementPosition());
+        final ImageDetailFragment detailFragment = this;
+        imageGallery.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int i, float v, int i2) {
+            }
+
+            @Override
+            public void onPageSelected(int i) {
+                Boolean endStatus = imageGrid.getEndStatus();
+                if(i>=imageGalleryAdapter.getCount()-1 && !endStatus){
+                    System.out.println("came inside fetchdata");
+                    Integer paginationIndex = imageGrid.getPaginationIndex()+1;
+                    detailFragment.fetchData(paginationIndex);
+                }
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int i) {
+
+            }
+        });
     }
+
+
 }

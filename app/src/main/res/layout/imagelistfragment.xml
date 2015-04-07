@@ -4,7 +4,6 @@
     android:layout_height="match_parent"
     android:background="#000"
     android:orientation="vertical" >
-
     <imagegrid.rendevezous.org.imagegrid.uicomponents.ImageGridListView
         android:id="@+id/imageList"
         android:divider="@null"
@@ -15,5 +14,4 @@
         android:layout_alignParentTop="true"
         android:listSelector="@drawable/list_row_selector"
        />
-
 </RelativeLayout>
