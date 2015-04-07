@@ -117,18 +117,17 @@ public class ImageElementAdapter extends BaseAdapter {
         currentImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
-                try {
-                    Intent intent = new Intent(a, DetailActivity.class);
-                    JSONObject contentObject = new JSONObject();
-                    contentObject.putOpt("imageItems",_imageItems);
-                    contentObject.put("position",position);
-                    applicationContext.setImageElements(contentObject);
-                    a.startActivity(intent);
-                    a.overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
+            try {
+                Intent intent = new Intent(a, DetailActivity.class);
+                JSONObject contentObject = new JSONObject();
+                contentObject.putOpt("imageItems",_imageItems);
+                contentObject.put("position",position);
+                applicationContext.setImageElements(contentObject);
+                a.startActivity(intent);
+                a.overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
             }
         });
 

@@ -11,15 +11,11 @@ import imagegrid.rendevezous.org.imagegrid.global.ImageGrid;
 import imagegrid.rendevezous.org.imagegrid.model.ImageElement;
 import imagegrid.rendevezous.org.imagegrid.uicomponents.ImageGalleryAdapter;
 import android.support.v4.view.ViewPager;
-
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
-
 import org.json.JSONArray;
 import org.json.JSONObject;
-
 import java.util.ArrayList;
-
 /**
  * Created by rahul on 27/3/15.
  */
@@ -51,31 +47,31 @@ public class ImageDetailFragment extends Fragment {
         client.get(appUrl, new AsyncHttpResponseHandler() {
             @Override
             public void onSuccess(String response) {
-                try {
-                    JSONObject obj = new JSONObject(response);
-                    JSONArray eventsArray = obj.getJSONArray("json");
-                    ArrayList<ImageElement> events = new ArrayList<ImageElement>();
-                    for(int i=0;i<eventsArray.length();i++){
-                        JSONObject currentObject = eventsArray.getJSONObject(i);
-                        ImageElement currentEvent = new ImageElement();
-                        currentEvent.setId(Integer.parseInt(currentObject.getString("id")));
-                        currentEvent.setTitle(currentObject.getString("title"));
-                        currentEvent.setUrl(currentObject.getString("url"));
-                        currentEvent.setHeight(Integer.parseInt(currentObject.getString("height")));
-                        currentEvent.setWidth(Integer.parseInt(currentObject.getString("width")));
-                        events.add(currentEvent);
-                    }
-                    if(events.size()== ImageGridConstant.MAX_LIMIT){
-                        imageGrid.setEndStatus(false);
-                    }else{
-                        imageGrid.setEndStatus(true);
-                    }
-                    imageGrid.setPaginationIndex(current);
-                    imageGalleryAdapter.addAllImages(events);
-                    imageGalleryAdapter.notifyDataSetChanged();
-                } catch (Throwable t) {
-                    Log.e("ImageGrid Error", Log.getStackTraceString(t));
+            try {
+                JSONObject obj = new JSONObject(response);
+                JSONArray eventsArray = obj.getJSONArray("json");
+                ArrayList<ImageElement> events = new ArrayList<ImageElement>();
+                for(int i=0;i<eventsArray.length();i++){
+                    JSONObject currentObject = eventsArray.getJSONObject(i);
+                    ImageElement currentEvent = new ImageElement();
+                    currentEvent.setId(Integer.parseInt(currentObject.getString("id")));
+                    currentEvent.setTitle(currentObject.getString("title"));
+                    currentEvent.setUrl(currentObject.getString("url"));
+                    currentEvent.setHeight(Integer.parseInt(currentObject.getString("height")));
+                    currentEvent.setWidth(Integer.parseInt(currentObject.getString("width")));
+                    events.add(currentEvent);
                 }
+                if(events.size()== ImageGridConstant.MAX_LIMIT){
+                    imageGrid.setEndStatus(false);
+                }else{
+                    imageGrid.setEndStatus(true);
+                }
+                imageGrid.setPaginationIndex(current);
+                imageGalleryAdapter.addAllImages(events);
+                imageGalleryAdapter.notifyDataSetChanged();
+            } catch (Throwable t) {
+                Log.e("ImageGrid Error", Log.getStackTraceString(t));
+            }
 
             }
         });
@@ -110,6 +106,5 @@ public class ImageDetailFragment extends Fragment {
             }
         });
     }
-
 
 }

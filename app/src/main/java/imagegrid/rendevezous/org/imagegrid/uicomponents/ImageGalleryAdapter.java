@@ -43,13 +43,11 @@ public class ImageGalleryAdapter extends PagerAdapter {
 
     @Override
     public int getCount() {
-
         return this.imageItems.size();
     }
 
     @Override
     public boolean isViewFromObject(View view, Object o) {
-
         return  view == ((LinearLayout) o);
     }
 
@@ -72,19 +70,15 @@ public class ImageGalleryAdapter extends PagerAdapter {
             public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
 
             }
-
         });
         container.addView(itemView);
         return itemView;
     }
-
     @Override
     public void destroyItem(ViewGroup container, int position, Object object) {
         container.removeView((LinearLayout) object);
     }
-
     public void addAllImages(List<ImageElement> imageElements){
         imageItems.addAll(imageElements);
     }
-
 }
