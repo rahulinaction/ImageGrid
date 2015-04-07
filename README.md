@@ -8,4 +8,3 @@ Features
 Libraries Used
 1)For networking https://github.com/loopj/android-async-http
 2)Images https://github.com/nostra13/Android-Universal-Image-Loader
-
